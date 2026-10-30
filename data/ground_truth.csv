@@ -1,0 +1,3 @@
+scenario_id,username,source_ip,description
+alice_source_burst,alice,192.0.2.10,Five failed authentication events from one source IP within five minutes
+carol_distributed_burst,carol,,Five failed authentication events against one account across multiple source IPs within five minutes
