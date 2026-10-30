@@ -86,6 +86,18 @@ Version 1 flagged source IP `192.0.2.10` after five failures. Version 2 retained
 
  The subsequent PowerShell test run completed successfully: `Ran 10 tests in 0.015s` followed by `OK`. All 10 unit tests passed in the user's local environment.
 
+## Scenario-level evaluation
+
+The repository includes `data/ground_truth.csv` with two labeled synthetic scenarios and `src/evaluate_detection.py` to compare V1 and V2. It reports true positives, false positives, false negatives, precision, recall, and F1 at the **scenario level**. Duplicate findings mapping to one scenario count as one detected scenario. Findings that do not map to a labeled scenario count as false positives.
+
+Run:
+
+```powershell
+python src/evaluate_detection.py --input data/auth_logs.csv --ground-truth data/ground_truth.csv
+```
+
+The labeled scenarios are the repeated-failure patterns intentionally planted in this small synthetic dataset. Metrics from this toy dataset are for demonstrating evaluation methodology only; they are not production performance estimates. Run the evaluator locally before adding its exact output to submission evidence.
+
 ## Output
 
 Each finding includes a rule identifier, grouping key, failed-event count, threshold, window start/end, severity, and description.
