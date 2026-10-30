@@ -35,8 +35,6 @@ Task-09-Defensive-Detection-Rule/
 
 ## Dataset schema
 
-The synthetic CSV file contains:
-
 | Field | Meaning |
 |---|---|
 | timestamp | ISO-8601 event time |
@@ -44,19 +42,19 @@ The synthetic CSV file contains:
 | source_ip | Source IPv4/IPv6 address |
 | status | `success` or `failed` |
 
-The sample includes a normal user, repeated failures from a single source, and repeated failures against one account from multiple sources.
+The sample includes a normal user, repeated failures from a single source, and repeated failures against one account from multiple sources. All addresses are documentation ranges reserved for examples.
 
 ## Detection logic
 
 ### Version 1 — Source-IP threshold
 
-Flags a source IP after **5 or more failed events in a rolling 5-minute window**. This is a useful baseline for repeated attempts from one source.
+Flags a source IP after **5 or more failed events in a rolling 5-minute window**.
 
 ### Version 2 — IP and account correlation
 
 Retains the source-IP rule and adds detection for **5 or more failed events against the same username in a rolling 5-minute window**, even if attempts arrive from different source IPs.
 
-The detector evaluates each event timestamp as the end of a rolling window. It does not assume that records are sorted.
+The detector evaluates each event timestamp as the end of a rolling window and supports unsorted input.
 
 ## Setup
 
@@ -72,52 +70,43 @@ python src/detection_engine.py --input data/auth_logs.csv --version v2
 python -m unittest discover -s tests -v
 ```
 
-Linux / macOS:
+## Local execution results
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python src/detection_engine.py --input data/auth_logs.csv --version v1
-python src/detection_engine.py --input data/auth_logs.csv --version v2
-python -m unittest discover -s tests -v
-```
+The user-provided PowerShell output for the included 15-event dataset showed:
 
-## Expected sample behavior
+| Metric | Result |
+|---|---:|
+| Total events | 15 |
+| Successful events | 3 |
+| Failed events | 12 |
+| Version 1 findings | 1 |
+| Version 2 findings | 3 |
 
-The included dataset is designed to contain:
-- One account with a series of failures from a single source IP (detected by V1 and V2).
-- One account with failures distributed across multiple source IPs (detected by V2 account correlation).
-- Ordinary successful and isolated failed events (not independently flagged).
+Version 1 flagged source IP `192.0.2.10` after five failures. Version 2 retained that IP finding and additionally flagged the accounts `alice` and `carol`. The distributed failures for `carol` came from multiple source IPs, demonstrating the additional coverage of account-based correlation.
 
-Run the commands above to produce the exact counts for this dataset. The project README will be updated with actual local test results after execution.
+The user also shared a test-run screenshot in which all 10 listed unit tests were marked `ok`. The screenshot did not include the final unittest summary line, so the total test-run summary should be captured separately before treating the test run as fully documented.
 
 ## Output
 
-The command prints a summary and a list of findings. Each finding includes:
-- Rule identifier
-- Grouping key (source IP or username)
-- Failed-event count
-- Window start and end
-- Severity and explanatory text
+Each finding includes a rule identifier, grouping key, failed-event count, threshold, window start/end, severity, and description.
 
 ## Test coverage
 
-Unit tests validate:
+Unit tests cover:
 - Baseline source-IP detection.
 - Improved account-based detection.
 - Success events are not counted as failures.
 - Events outside the time window are not combined.
 - Unsorted event timestamps.
-- Invalid statuses, timestamps, and IP addresses.
-- CSV loading and detector behavior.
+- Invalid statuses, timestamps, thresholds, and IP addresses.
 
 ## Detection limitations and tuning
 
 - Thresholds are illustrative and should be tuned to the environment and baseline behavior.
 - Shared NAT, proxies, automated clients, and misconfigured applications can create false positives.
 - Distributed attempts across many accounts and IPs may evade these simple per-key thresholds.
-- This is a threshold-based analytic, not proof of compromise.
-- Sigma YAML expresses a conceptual rule. The Python engine is the executable implementation; no SIEM backend conversion or production deployment is claimed.
+- A threshold crossing is an alert signal, not proof of compromise.
+- The YAML files are Sigma-style conceptual rule definitions. The Python engine is the executable implementation; native SIEM correlation syntax and backend conversion are not claimed.
 
 ## References
 
@@ -129,4 +118,4 @@ Unit tests validate:
 
 ## Evidence
 
-Add genuine screenshots from your own terminal after running the analyzer and tests to the `screenshots/` directory. Do not represent reconstructed illustrations as actual execution evidence.
+Store genuine terminal screenshots in `screenshots/`. Do not represent reconstructed illustrations as actual execution evidence.
