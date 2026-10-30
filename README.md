@@ -93,10 +93,31 @@ The repository includes `data/ground_truth.csv` with two labeled synthetic scena
 Run:
 
 ```powershell
-python src/evaluate_detection.py --input data/auth_logs.csv --ground-truth data/ground_truth.csv
+python -m src.evaluate_detection --input data/auth_logs.csv --ground-truth data/ground_truth.csv
 ```
 
 The labeled scenarios are the repeated-failure patterns intentionally planted in this small synthetic dataset. Metrics from this toy dataset are for demonstrating evaluation methodology only; they are not production performance estimates. Run the evaluator locally before adding its exact output to submission evidence.
+
+## Verified local evaluation results
+
+The user ran the evaluator successfully on Windows PowerShell with the command:
+
+```powershell
+python -m src.evaluate_detection --input data/auth_logs.csv --ground-truth data/ground_truth.csv
+```
+
+The observed scenario-level results were:
+
+| Metric | V1 | V2 |
+|---|---:|---:|
+| True positives | 1 | 2 |
+| False positives | 0 | 0 |
+| False negatives | 1 | 0 |
+| Precision | 100.0% | 100.0% |
+| Recall | 50.0% | 100.0% |
+| F1 score | 66.7% | 100.0% |
+
+V1 missed the labeled `carol_distributed_burst` scenario because it grouped failures only by source IP. V2 detected that scenario by correlating failures by username across multiple source IPs. These figures describe only the two labeled scenarios in this small synthetic dataset; they are not estimates of production detection performance.
 
 ## Output
 
