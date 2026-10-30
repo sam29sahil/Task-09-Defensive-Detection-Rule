@@ -1,0 +1,26 @@
+title: Repeated Authentication Failures From One Source IP
+id: 8f8a4c3a-1c0e-4a8f-9c2c-000000000001
+status: experimental
+description: >
+  Conceptual Sigma-style rule for authentication failures. Correlation
+  thresholds and time windows are documented in this lab and are executed
+  by src/detection_engine.py.
+author: Task 09 Defensive Detection Rule Lab
+date: 2026/10/30
+logsource:
+  category: authentication
+  product: windows
+detection:
+  selection:
+    status: failed
+  condition: selection
+fields:
+  - timestamp
+  - username
+  - source_ip
+falsepositives:
+  - Users mistyping passwords
+  - Shared workstations or NAT gateways
+level: medium
+# Correlation implemented by the companion Python engine:
+# group by source_ip; count failed events >= 5 within 5 minutes.
