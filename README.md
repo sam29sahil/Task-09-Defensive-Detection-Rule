@@ -84,7 +84,7 @@ The user-provided PowerShell output for the included 15-event dataset showed:
 
 Version 1 flagged source IP `192.0.2.10` after five failures. Version 2 retained that IP finding and additionally flagged the accounts `alice` and `carol`. The distributed failures for `carol` came from multiple source IPs, demonstrating the additional coverage of account-based correlation.
 
-The user also shared a test-run screenshot in which all 10 listed unit tests were marked `ok`. The screenshot did not include the final unittest summary line, so the total test-run summary should be captured separately before treating the test run as fully documented.
+ The subsequent PowerShell test run completed successfully: `Ran 10 tests in 0.015s` followed by `OK`. All 10 unit tests passed in the user's local environment.
 
 ## Output
 
