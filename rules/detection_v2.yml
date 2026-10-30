@@ -1,0 +1,29 @@
+title: Repeated Authentication Failures By Source Or Account
+id: 8f8a4c3a-1c0e-4a8f-9c2c-000000000002
+status: experimental
+description: >
+  Improved conceptual Sigma-style rule covering repeated failures from one
+  source IP and repeated failures against one account across multiple sources.
+  Correlation thresholds and windows are implemented by the companion Python
+  engine rather than expressed as native Sigma correlation syntax here.
+author: Task 09 Defensive Detection Rule Lab
+date: 2026/10/30
+logsource:
+  category: authentication
+  product: windows
+detection:
+  selection:
+    status: failed
+  condition: selection
+fields:
+  - timestamp
+  - username
+  - source_ip
+falsepositives:
+  - Users mistyping passwords
+  - Password managers or stale saved credentials
+  - Automated services using expired credentials
+level: medium
+# Correlation implemented by the companion Python engine:
+# 1) group by source_ip; count failed events >= 5 within 5 minutes.
+# 2) group by username; count failed events >= 5 within 5 minutes.
